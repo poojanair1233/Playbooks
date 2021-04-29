@@ -1,0 +1,21 @@
+---
+- hosts: btmx-re-ref-met
+  gather_facts: false
+  tasks:
+  - name: Disabling MD5 cron - cass_a.
+    cron:
+      name: cass_a
+      state: absent
+  - name: Disabling MD5 cron - cass_b.
+    cron:
+      name: cass_b
+      state: absent
+  - name: Disabling MD5 cron - cass_c.
+    cron:
+      name: cass_c
+      state: absent
+  - name: Disabling MD5 cron - cass_d.
+    cron:
+      name: cass_d
+      state: absent
+
