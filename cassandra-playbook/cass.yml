@@ -1,0 +1,8 @@
+---
+- hosts: myhosts
+  become: yes
+  become_user: root
+  become_method: sudo  
+  serial: 1
+  roles: 
+    - cassandra

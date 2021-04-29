@@ -1,0 +1,6 @@
+---
+- name: Wait for C* to start
+  become: yes
+  become_user: root
+  become_method: sudo
+  shell: nohup /etc/init.d/cassandra start -f >cass.out &

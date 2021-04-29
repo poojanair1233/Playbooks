@@ -1,0 +1,87 @@
+---
+
+- name: create group
+  become: yes
+  become_user: root
+  become_method: sudo
+  group:
+    name={{ cassandra_install_group }}
+    gid={{ cassandra_install_group_id }}
+    state=present
+ 
+- name: create user
+  become: yes
+  become_user: root
+  become_method: sudo
+  user:
+    name={{ cassandra_install_user }}
+    state=present
+    createhome=yes
+    group={{ cassandra_install_group_id }}
+    password={{ cassandra_install_password }}
+
+- name: create C* data directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: /data1/cassandra/data
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+
+- name: create C* commitlog directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: /data1/cassandra/commitlog
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+
+- name: create C* saved_caches directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: /data1/cassandra/saved_caches
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+
+- name: create log directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: /var/log/cassandra
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+
+# Create the cassandra.yaml file from template
+
+- template:
+    src: /etc/ansible/roles/cassandra/files/config.j2
+    dest: /opt/apache-cassandra-2.1.16/conf/cassandra.yaml
+    owner: cassandra
+    group: cassandra
+
+- template:
+    src: /etc/ansible/roles/cassandra/files/logback.xml.j2
+    dest: /opt/apache-cassandra-2.1.16/conf/logback.xml
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+
+- template:
+    src: /etc/ansible/roles/cassandra/files/bash_profile.j2
+    dest: /opt/homecass/.bash_profile
+    owner: cassandra
+    group: cassandra
+    mode: 0755

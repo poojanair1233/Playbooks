@@ -1,0 +1,12 @@
+---
+- name: copy init script
+  become: yes              
+  become_user: root
+  become_method: sudo
+  template:
+    src: /etc/ansible/roles/cassandra/files/cassandra.j2
+    dest: /etc/init.d/cassandra
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+

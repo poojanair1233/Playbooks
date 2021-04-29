@@ -1,0 +1,21 @@
+---
+#- name: Install/copy Java
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+#  synchronize: src=/home/cassandra/jdk1.8.0_162 dest=/usr/java
+- name: Install/copy C*
+  become: yes
+  become_user: root
+  become_method: sudo      
+  synchronize: 
+   src: /home/bonu0001/apache-cassandra-2.1.16 
+   dest: /opt
+#   rsync_path: "sudo su -c rsync"
+   use_ssh_args: yes  
+#- name: remove and create sym link and sort out the permissions
+#  shell: |
+#    cd /usr/java
+#    sudo chown -R root:root jdk1.8.0_162
+#    sudo rm latest
+#    sudo ln -s /usr/java/jdk1.8.0_162 latest

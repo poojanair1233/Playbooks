@@ -1,0 +1,13 @@
+---
+# vars file for cassandra
+cluster_name: 'sal_cluster'
+log_level: 'info'
+cassandra_install_group: "cassandra"
+cassandra_install_group_id: "9081"
+cassandra_install_user: "cassandra"
+cassandra_install_password: "*****"
+seeds: "sal001, sal002"
+endpoint_snitch: "Ec2Snitch"
+host_ip: '{{ ansible_eth0.ipv4.address }}' 
+dc: "dc1"
+rack: "rack1"
