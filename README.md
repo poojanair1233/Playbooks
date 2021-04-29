@@ -1,9 +1,6 @@
 # playbooks
 Documentation of Playbooks
 
-What playbook?
-Which file?
-How to use it?
 
 This repository is being created to keep a log of all the ansible playbooks that I have devleoped for various use-cases.
 
