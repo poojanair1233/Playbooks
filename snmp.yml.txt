@@ -1,0 +1,57 @@
+---
+- hosts: [myhosts]
+  serial: 1
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  tasks:
+   - name: packages installed
+     package_facts:
+     manager: rpm
+
+
+   - name: check for snmp-utlis package and set snmp variable if installed
+     set_fact:
+      snmp: 1
+     when: "'net-snmp-utils' in ansible_facts.packages"
+     ignore_errors: true
+
+   - name: set no_snmp value if "net-snmp-utils" not installed
+     set_fact:
+      no_snmp: 2
+     when: snmp is not defined
+
+
+   - name: heck output of snmp variable
+     debug:
+      msg: "{{ snmp }}"
+     when: snmp is defined
+
+   - name: Check output of no_snmp variable
+     debug:
+      msg: "{{ no_snmp }}"
+     when: no_snmp is defined
+
+
+   - name: Install "net-snmp-utils" if not present
+     yum:
+      name: net-snmp-utils
+      state: present
+     when: no_snmp is defined
+
+
+   - name: Grep for snmpd PID
+     shell: pgrep snmpd
+     register: pid_snmp
+
+
+   - name: Kill snmpd process
+     shell: kill -9 {{ item }}
+     with_items: "{{ pid_snmp.stdout_lines }}"
+
+
+   - name: Start snmp
+     service:
+      name: snmpd
+      state: started
