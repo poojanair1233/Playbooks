@@ -1,0 +1,46 @@
+---
+  hosts: [myhosts]
+  serial: 1
+  become: yes
+  become_user: cassandra
+
+  tasks:
+
+  - name: check for down node
+    shell: /opt/cassandra/bin/nodetool status | grep DN | awk '{print $2}'
+    register: down
+
+  - fail:
+     msg: "Not Bouncing as down nodes seen {{ down.stdout }} and ending the playbook"
+    when: down.stdout != ''
+    any_errors_fatal: true
+
+  - name: Collect PID of Cassandra Process if no node is down
+    shell: pgrep java
+    register: pid_of_cass
+    ignore_errors: true
+
+
+  - name: Stop Cassandra Process
+    shell: "/opt/cassandra/bin/nodetool {{ item }}"
+    with_items:
+             - disablegossip
+             - disablethrift
+             - disablebinary
+             - drain
+    loop_control:
+           pause: 1
+
+  - shell: "kill -9 {{ item }}"
+    with_items: "{{ pid_of_cass.stdout_lines }}"
+  
+  - name: Restart Cassandra
+    shell: /etc/init.d/cassandra start
+    async: true
+    poll: 0
+
+  - name: Wait for Cassandra to start
+    wait_for:
+     host: "{{ansible_default_ipv4.address}}"
+     port: 9042
+     
