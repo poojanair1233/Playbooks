@@ -1,0 +1,102 @@
+- hosts: all
+  gather_facts: false
+  #become: yes
+  #become_user: cassandra
+  serial: 1
+  ignore_unreachable: true
+  tasks:
+
+  - name: Get service facts
+    service_facts:
+
+  - name: Stop Datastax agent
+    tags: stop-datastax-agent
+    block:
+     - name: Stop Datastax-agent Process
+       command: pbrun service datastax-agent stop
+
+     - name: Wait for Datastax agent to be stopped
+       service_facts:
+       register: result
+       until: result.ansible_facts.services['datastax-agent.service'].state == 'stopped'
+       retries: 10
+       delay: 2
+       ignore_errors: true
+
+     - name: Check if Datastax agent stopped successfully
+       debug:
+         msg: "Datastax agent is {{ ansible_facts.services['datastax-agent.service'].state}}"
+
+  - name: Status DSE
+    tags: stop-dse
+    block:
+     - name: Stop DSE Process
+       command: pbrun service dse stop
+
+     - name: Check if DSE stoppped successfully
+       become: true
+       become_user: cassandra
+       shell: 'egrep -i "DSE shutdown complete" /apps/cassandra/logs/system.log'
+       register: dse_status
+       until: dse_status.stdout is regex ("DSE shutdown complete")
+       retries: 100
+       delay: 3
+
+     - name: Gather service facts
+       service_facts:
+
+     - name: Print the status of DSE
+       debug:
+         msg: "DSE process is {{ ansible_facts.services['dse'].state }}"
+
+  - name: Start DSE
+    tags: start-dse
+    block:
+     - name: Move system.log file
+       become: true
+       become_user: cassandra
+       shell: '/bin/mv /apps/cassandra/logs/system.log /apps/cassandra/logs/system.log`date +"%Y%m%d_%H%M%S%p"`'
+
+     - name: Start DSE
+       command: pbrun service dse start
+
+     - name: Wait for DSE to start
+       become: true
+       become_user: cassandra
+       shell: 'egrep -i "DSE startup complete" /apps/cassandra/logs/system.log'
+       register: dse_status
+       until: dse_status.stdout is regex("DSE startup complete")
+       retries: 100
+       delay: 3
+
+     - name: Exit if DSE failed to start
+       fail:
+        msg: "DSE failed to start. Please look at the logs and rectify"
+       when:  dse_status.stdout == ""
+
+     - name: Gather service facts
+       service_facts:
+
+     - name: Print status of DSE
+       debug:
+         msg: "DSE process is {{ ansible_facts.services['dse'].state }}"
+
+  - name: START DATASTAX-AGENT
+    tags: start-datastax-agent
+    block:
+     - name: Start Datastax-agent process
+       command: pbrun service datastax-agent start
+
+     - name: Check status of Datastax agent
+       service_facts:
+       register: result
+       until: result.ansible_facts.services['datastax-agent.service'].state == 'running'
+       retries: 10
+       delay: 2
+       ignore_errors: true
+
+     - name: Check if Datastax-agent started successfully
+       debug:
+         msg: "Datastax agent is {{ ansible_facts.services['datastax-agent.service'].state}}"
+
+
