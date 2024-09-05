@@ -1,0 +1,109 @@
+---
+- hosts: all
+  gather_facts: false
+  #become: yes
+  #become_user: cassandra
+  serial: 1
+  ignore_unreachable: true
+  tasks:
+
+  - name: STOP Datastax AGENT
+    tags: stop-datastax-agent
+    ignore_unreachable: true
+    block:
+     - name: STOP Datastax-agent Process
+       command: pbrun service datastax-agent stop
+
+     - name: Wait for Datastax agent to be stopped
+       service_facts:
+       register: result
+       until: result.ansible_facts.services['datastax-agent.service'].state == 'stopped'
+       retries: 10
+       delay: 2
+       ignore_errors: true
+
+     - name: Check if Datastax agent stopped successfully
+       debug:
+         msg: "Datastax agent is {{ ansible_facts.services['datastax-agent.service'].state}}"
+
+  - name: STOP DSE Process
+    tags: stop-dse
+    become: true
+    become_user: cassandra
+    ignore_errors: true
+    ignore_unreachable: true
+    block:
+     - name: Stop DSE Process
+       shell: '/dse_install/dse-6.8.23/bin/dse cassandra-stop'
+
+     - name: Check if DSE is running
+       shell: ps -ef| grep -v grep|grep 'dse'|grep -v 'datastax-agent'|grep 'cassand+'|awk '{print $2}'|wc -l
+       register: dse_pid
+       until: "dse_pid.stdout == '0'"
+       retries: 20
+       delay: 10
+       ignore_errors: true
+
+     - name: DSE Status
+       debug:
+        msg: "{% if dse_pid.stdout == '0' %} DSE shutdown complete {% else %} DSE is not completely down,Please check. {% endif %}"
+
+     - name: Exit if DSE failed to stop
+       fail:
+        msg: DSE failed to stop. Exiting.. Please check
+       when: "dse_pid.stdout != '0'"
+
+  - name: START DSE Process
+    tags: start-dse
+    become: true
+    become_user: cassandra
+    ignore_unreachable: true
+    block:
+
+     - name: Move the system.log file
+       become: true
+       become_user: cassandra
+       shell: '/bin/mv /sysauditlog/syslogs/cassandra/system.log /sysauditlog/syslogs/cassandra/system.log`date +"%Y%m%d_%H%M%S%p"`'
+
+     - name: START DSE
+       become: true
+       become_user: cassandra
+       shell: |
+          nohup /dse_install/dse-6.8.23/bin/dse cassandra >> /tmp/dse_startup.out`date +"%Y%m%d_%H%M%S"`&
+          sleep 10
+
+     - name: Check if DSE is started
+       shell: 'egrep -i "DSE startup complete" /sysauditlog/syslogs/cassandra/system.log'
+       register: dse_status
+       until: dse_status.stdout is regex("DSE startup complete")
+       retries: 100
+       delay: 3
+
+     - name: Exit if DSE failed to start
+       fail:
+        msg: DSE Failed to Start. Please have a look at the logs and rectify.
+       when: dse_status.stdout == ""
+
+     - name: Checking if DSE Startup Completed Successfully
+       debug:
+        msg: DSE Successfully Started.
+
+
+  - name: START DATASTAX-AGENT
+    tags: start-datastax-agent
+    block:
+     - name: Start Datastax-agent Process
+       command: pbrun service datastax-agent start
+
+     - name: Check status of Datastax agent
+       service_facts:
+       register: result
+       until: result.ansible_facts.services['datastax-agent.service'].state == 'running'
+       retries: 10
+       delay: 2
+       ignore_errors: true
+
+     - name: Check if Datastax-agent started successfully
+       debug:
+         msg: "Datastax agent is {{ ansible_facts.services['datastax-agent.service'].state}}"
+
