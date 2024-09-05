@@ -1,0 +1,25 @@
+---
+
+- hosts: all
+  gather_facts: false
+  serial: 1
+
+  tasks:
+   - name: Check disk
+     shell: df -h | grep 'data\|backup'
+     register: disk
+
+   - name: Print memory
+     debug:
+      msg: "{{inventory_hostname}}"
+
+   - name: create file to add nodename to it
+     blockinfile:
+      path: ./disk_file
+      block: |
+       "{{inventory_hostname}}"
+       "{{disk.stdout}}"
+      marker: ""
+      create: yes
+     delegate_to: 127.0.0.1
+
