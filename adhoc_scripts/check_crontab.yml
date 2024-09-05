@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  gather_facts: false
+  become: true
+  become_user: cassandra
+  serial: 1
+  tasks:
+   - name: Check memory
+     shell: crontab -l
+     register: crontab
+
+   - name: Print crontab
+     debug:
+      msg: "{{crontab.stdout}}"
+
+
