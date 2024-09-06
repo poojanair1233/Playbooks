@@ -1,0 +1,25 @@
+---
+
+- hosts: all
+  gather_facts: false
+  serial: 1
+  vars:
+   file_path: /apps/cassandra/data/<Keypspace>/<tablename>*
+   
+  tasks:
+   - name: Check Large Files
+     shell: ls -lhS {{ file_path }} | head -15
+     register: files
+
+   - name: create file to add nodename to it
+     become: yes
+     become_user: acassandra
+     blockinfile:
+      path: /apps/cassandra/pooja.nair_playbooks/adhoc_scripts/large_file
+      block: |
+       "{{inventory_hostname}}"
+       "{{files.stdout}}"
+      marker: ""
+      create: yes
+     delegate_to: 127.0.0.1
+
