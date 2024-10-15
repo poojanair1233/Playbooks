@@ -1,0 +1,45 @@
+---
+
+- hosts: all
+  become: true
+  become_user: cassandra
+  gather_facts: false
+  serial: 1
+
+  tasks:
+    - name: Create DDL_BACKUPS directory
+      file:
+       path: /backup/DDL_BACKUPS
+       state: directory
+
+    - name: Create backuplogs directory
+      file:
+       path: /apps/cassandra/logs/backuplogs
+       state: directory
+
+    - name: Copy scripts
+      copy:
+       src: '{{ item}}'
+       dest: '/home/cassandra/DBO/'
+       owner: cassandra
+       group: cassandra
+       mode: 755
+      loop:
+       - /apps/cassandra/pooja.nair_playbooks/adhoc_scripts/DDL_Backup/pass.sh
+       - /apps/cassandra/pooja.nair_playbooks/adhoc_scripts/DDL_Backup/cassandra_ddl_sysauth_backup.sh
+
+    - name: Hide Password File
+      shell: |
+        cd  /apps/cassandra/pooja.nair_playbooks/adhoc_scripts/DDL_Backup
+        mv pass.sh .pass.sh
+
+    - name: Create CRONTAB entry
+      cron:
+       name: #(AMEX Custom) Daily DDL and SYSTEM_AUTH.PERMISSIONS backup and Obsolete cleanup
+       month: "*"
+       day: "*"
+       hour: "23"
+       minute: "00"
+
+    - name: Check crontab entry
+      shell: crontab -l
