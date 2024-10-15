@@ -1,0 +1,30 @@
+---
+
+- hosts: all
+  gather_facts: false
+  serial: 1
+#  vars:
+#   rackdc_file_path: /home/cassandra/DSE_INSTALL/dse-6.8.23/resources/cassandra/conf/cassandra-rackdc.properties
+#   conf_file_path: /home/cassandra/DSE_INSTALL/dse-6.8.23/resources/cassandra/conf/cassandra.yaml
+
+  tasks:
+   - name: Check nodetool access
+     shell: cat /etc/cassandra/conf/jmxremote.access | grep dboadmin
+     register: access
+
+     #  - name: Print Core
+     #debug:
+     # msg: "{{core.stdout}}"
+
+   - name: create file to add nodename to it
+     become: yes
+     become_user: acassandra
+     blockinfile:
+      path: /apps/cassandra/pooja.nair_playbooks/adhoc_scripts/nodetool_access_file
+      block: |
+       "{{inventory_hostname}}"
+      marker: ""
+      create: yes
+      when: access.stderr == ""
+     delegate_to: 127.0.0.1
+
