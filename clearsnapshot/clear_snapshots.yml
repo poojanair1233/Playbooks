@@ -1,0 +1,24 @@
+---
+- hosts: all
+  gather_facts: false
+#  become: yes
+#  become_user: cassandra
+  serial: 1
+  vars_files:
+   - snapshots_to_be_cleared.yml
+
+  tasks:
+  - name: Get Nodetool Location
+    become: true
+    become_user: cassandra
+#    become_flags: '--login'
+    shell: bash -ilc 'which nodetool'
+    register: NODETOOL_LOC
+
+  - name: print the location
+    debug:
+      msg: "{{ NODETOOL_LOC.stdout }}"
+
+  - name: Clear snapshot
+    shell: {{ NODETOOL_LOC }} -u pnair51 -p clearsnapshot -t "{{ item }}"
+    with_items: "{{ snapshots }}"
