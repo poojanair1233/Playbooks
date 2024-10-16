@@ -1,0 +1,13 @@
+
+---
+# vars file for nodetool
+
+#NODETOOL_LOC: /usr/bin/       ## nodetool location  directory
+NODETOOL_LOC: /dse/dse-6.8.18/bin/
+user: "id"
+passwd: "passwd"
+
+
+#NODETOOL_LOC: /usr/bin/
+#user: adsid
+#passwd:
