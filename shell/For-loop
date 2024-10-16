@@ -10,31 +10,31 @@ free | grep Mem | awk '{print $4/$2 * 100.0}'
 
 
 
-for i in http://http://hvgplgm1db{002..060}; do echo $i ; echo 'exit' | telnet $i 22 ; echo ; sleep 5; done
+for i in nodes{1..x}; do echo $i ; echo 'exit' | telnet $i 22 ; echo ; sleep 5; done
 
 
-for i in http://http://hvcplgmddb{5001..5009} ; do echo $i ; ssh pnair51@$i df -hT | grep /backup ; sleep 5 ; done
+for i in nodes{1..x} ; do echo $i ; ssh pnair51@$i df -hT | grep /backup ; sleep 5 ; done
 
 ansible all -i /apps/cassandra/playbooks/pooja.nair/DDL_backup/nodes -m shell -a df -hT | grep / -u pnair51 -k
 
 
 
-for i in {hvcplcxidb602.blr.aexp.com,hvcplcxidb1601.blr.aexp.com,hvcplcxidb601.blr.aexp.com,hvcplcxidb603.blr.aexp.com,hvcplcxidb604.blr.aexp.com,hvcplcxidb1603.blr.aexp.com,hvcplcxidb605.blr.aexp.com,hvcplcxidb606.blr.aexp.com,hvcplcxidb1605.blr.aexp.com,hvcplcxidb551.blr.aexp.com,hvcplcxidb552.blr.aexp.com,hvcplcxidb1551.blr.aexp.com}; do echo $i ; ssh $i ps -ef | grep mcac ; sleep 5 ; done
+for i in nodes{1..x}; do echo $i ; ssh $i ps -ef | grep mcac ; sleep 5 ; done
 
-for i in {hvaplcxjdb353.syd.aexp.com,hvaplcxjdb354.syd.aexp.com,hvaplcxjdb1353.syd.aexp.com}; do echo $i ; ssh $i ps -ef | grep mcac ; sleep 5 ; done
-
-
-for i in {hvgplcxudb162.phx.aexp.com,hvgplcxudb163.phx.aexp.com,hvgplcxudb1162.phx.aexp.com,hvnplcxudb162.gso.aexp.com,hvnplcxudb163.gso.aexp.com,hvnplcxudb1162.gso.aexp.com}; do echo $i ; ssh $i ls -ltr /apps/cassandra | grep mcac ; sleep 5 ; done
+for i in nodes{1..x}; do echo $i ; ssh $i ps -ef | grep mcac ; sleep 5 ; done
 
 
-for i in hvcplebadb000{1..8}.bom.aexp.com; do echo $i ; sshpass -e ssh $i df -hT ; sleep 5 ; done
-
-for i in hvcplebadb000{1..8}.bom.aexp.com; do echo $i ; sshpass -e ssh $i mailx -s "hello" pooja.nair@aexp.com ; sleep 5 ; done 
-for i in hvcplebadb000{1..8}.bom.aexp.com; do echo $i ; sshpass -e ssh $i pbrun /bin/su - cassandra -c "crontab -l"; sleep 5 ; done
+for i in nodes{1..x}; do echo $i ; ssh $i ls -ltr /apps/cassandra | grep mcac ; sleep 5 ; done
 
 
+for i in nodes{1..x}; do echo $i ; sshpass -e ssh $i df -hT ; sleep 5 ; done
 
-for i in lepecpdb00010{43,44,45,47,48,49}; do echo $i ; sshpass -p  $PASS ssh $i ps -ef | grep exporter ; sleep 5 ; done
+for i in nodes{1..x}; do echo $i ; sshpass -e ssh $i mailx -s "hello" <email-id> ; sleep 5 ; done 
+for i in nodes{1..x}; do echo $i ; sshpass -e ssh $i pbrun /bin/su - <userID> -c "crontab -l"; sleep 5 ; done
+
+
+
+for i in nodes{1..x}; do echo $i ; sshpass -p  $PASS ssh $i ps -ef | grep exporter ; sleep 5 ; done
 
 
 --------------------------------------------------------------- Shell Commands --------------------------------------------------------------------
@@ -69,66 +69,21 @@ grep -e CREATE -e gc indiagmscallbackblr_dd.txt
 -----------------------------------------
 
 
-SPLUNK
-
-index="600000078_d_cassandra_idx1"
-index="600000078_d_cassandra_idx1" sourcetype="600000078_xpaas_cassandra_GPCAECPR42DISASTER_SYSTEM_LOG"
-index="600000078_d_cassandra_idx1" sourcetype="600000078_xpaas_cassandra_GPCAECPR42DISASTER_DEBUG_LOG"
-index="600000078_d_cassandra_idx1" sourcetype="600000078_xpaas_cassandra_GPCAECPR42DISASTER_AUDIT_LOG"
-index="600000078_d_cassandra_idx1" sourcetype="600000078_xpaas_cassandra_GPCAECPR42DISASTER_GC_LOG"
-index="600000078_d_cassandra_idx1" sourcetype="600000078_xpaas_cassandra_GPCAECPR42DISASTER_DATASTAX_AGENT_LOG"
-#Opscenter log
-index="600001540_d_cassandra_idx1" source=/sysauditlog/syslogs/repair_service/GPCAECPR42DISASTER.log
-index="600001540_d_cassandra_idx1" sourcetype=600001540_CASSANDRA_SHARED_OPSCTR_APP_E3_OPSCENTERD " [GPCAECPR42DISASTER] "
-#Check for repair
-index="600001540_d_cassandra_idx1" sourcetype=600001540_CASSANDRA_SHARED_OPSCTR_APP_E3_REPAIR source=/sysauditlog/syslogs/repair_service/GPCAECPDBOPS.log "INFO: Deactivating repair service"
-
-PROMETHEUS - Sahara
-
-namedprocess_namegroup_num_procs{groupname='DSE',job='cassandra-process',cluster='GPCAECPNEMONTR'}
-namedprocess_namegroup_num_procs{groupname='DSE_AGENT',job='cassandra-process',cluster='GPCAECPNEMONTR'}
-namedprocess_namegroup_num_procs{groupname='SPLUNK',job='cassandra-process',cluster='GPCAECPNEMONTR'}
-up{job='cassandra-process',service='cassandra',cluster='GPCAECPNEMONTR'}
-namedprocess_namegroup_num_procs{groupname="CHRONY",cluster='GPCAECPNEMONTR'}
 
 
-PROMETHEUS - CTAM
-
-up{db_clstr="INMPCAECPNEMOCAP2_IDL"}
-
-CREATE ROLE apattn WITH LOGIN = TRUE AND SUPERUSER = TRUE;
-GRANT EXECUTE ON LDAP SCHEME TO apattn ;
-
-NOTE : No NEMO clusters -- No splunk for logging only ELF
-
-
-for i in {hvcplcxidb1203,hvcplcxidb204} ; do echo $i ; ssh $i cat /etc/cassandra/conf/jmxremote.access | tail -8 ; sleep 2 ; done
-
-for i in {hvcplcxidb751.blr.aexp.com,hvcplcxidb752.blr.aexp.com,hvcplcxidb1751.blr.aexp.com,hvcplcxidb351.gur.aexp.com,hvcplcxidb1351.gur.aexp.com,hvcplcxidb352.gur.aexp.com,hvcplcxidb605.blr.aexp.com,hvcplcxidb1605.blr.aexp.com,hvcplcxidb606.blr.aexp.com,hvcplcxidb205.gur.aexp.com,hvcplcxidb206.gur.aexp.com,hvcplcxidb1205.gur.aexp.com,hvcplcxidb552.blr.aexp.com,hvcplcxidb1551.blr.aexp.com,hvcplcxidb552.blr.aexp.com,hvcplcxidb151.gur.aexp.com,hvcplcxidb1151.gur.aexp.com,hvcplcxidb152.gur.aexp.com,hvcplcxidb201.gur.aexp.com,,hvcplcxidb202.gur.aexp.com,hvcplcxidb1201.gur.aexp.com,hvcplcxidb203.gur.aexp.com,hvcplcxidb204.gur.aexp.com,hvcplcxidb1203.gur.aexp.com} ; do echo $i ; ping -c 1 $i ; sleep 2 ; done
 
 -----------------------------------------------------------------------------------
 
-ansible-playbook --extra-vars "checkstatus='getmaxhintwindow'" -i GPCAECPNEMOTID-modify-hints --limit "ipc1-rack-1A" -u pnair51 -k nodetool_check_set.yml
+ansible-playbook --extra-vars "checkstatus='getmaxhintwindow'" -i GPCAECPNEMOTID-modify-hints --limit "ipc1-rack-1A" -u <id> -k nodetool_check_set.yml
 
-ansible-playbook --extra-vars "checkstatus='getmaxhintwindow' setstatus='setmaxhintwindow 25200000'" -i GPCAECPNEMOTID-modify-hints --limit "ipc1-rack-1A" -u pnair51 -k nodetool_check_set.yml
+ansible-playbook --extra-vars "checkstatus='getmaxhintwindow' setstatus='setmaxhintwindow 25200000'" -i GPCAECPNEMOTID-modify-hints --limit "ipc1-rack-1A" -u <id> -k nodetool_check_set.yml
 
-ansible-playbook -i GPCAECPNEMOCAP_IPC2_1stBatch -u svc.dbocassfhp k restart.yml --tags "stop-datastax-agent, stop-dse"
+ansible-playbook -i GPCAECPNEMOCAP_IPC2_1stBatch -u <id> k restart.yml --tags "stop-datastax-agent, stop-dse"
 
-ansible-playbook -i GPCAECPNEMONTR-1stBatch -u svc.dbocassfhp -k restart.yml --tags "stop-datastax-agent, stop-dse"
+ansible-playbook -i GPCAECPNEMONTR-1stBatch -u <id> -k restart.yml --tags "stop-datastax-agent, stop-dse"
 
-ansible-playbook -i NUW1APV11-C13-LOCAL-GPCAECPNEMOTID-2A -u svc.dbocassfhp -k restart.yml --tags "stop-datastax-agent, stop-dse"
+ansible-playbook -i NUW1APV11-C13-LOCAL-GPCAECPNEMOTID-2A -u <id> -k restart.yml --tags "stop-datastax-agent, stop-dse"
 
 ------------------------------------------
 
- /bin/sh /apps/cassandra/cassandra-scripts/bin/notify -l CRITICAL -m "Test" -n "$ScriptName"
- 
- #### Cassandra Backup script -- Runs everyday at 20:00 ##############
-0 22 * * * /bin/sh /apps/cassandra/cassandra-scripts/cassandra_backup_1.sh -c /etc/cassandra -b /backup 2>/apps/cassandra/cassandra-scripts/log/backup_err.out
- 
- 
- a.txt
- b.txt
- 
- c.zip
- gun.
  
