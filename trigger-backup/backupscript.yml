@@ -1,0 +1,22 @@
+---
+- hosts: all
+  gather_facts: true
+  tasks:
+
+  - name: Trigger backup and print if failed
+    block:
+    - name: Trigger backup
+      become: true
+      become_user: cassandra
+      shell: /bin/sh </path/to/script>
+      register: output
+
+    - name: Print output of variable
+      debug:
+        msg: "{{ output.stdout_lines[-1] }}"
+      when: output.stdout_lines[-1] | regex_search('Backup is Successful')
+
+    rescue:
+    - name: Send email when backup fails
+      shell: nohup echo "Please check backup as taking backup failed on the subjected server" | mailx -s  "Backup failed on Node - {{ ansible_hostname }}." <email-id> &
+      when:  ansible_failed_task.name == 'Trigger backup'
