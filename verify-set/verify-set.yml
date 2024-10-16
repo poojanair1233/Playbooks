@@ -1,0 +1,35 @@
+-   name: Playbook to check and set nodetool command
+    hosts: all
+    vars_files:
+      - /apps/cassandra/verify-set/vars/main.yml
+    # gather_face: false
+    serial: 1
+    ignore_unreachable: true
+    tasks:
+
+       - name: Check nodetool command
+         command: '{{ NODETOOL_LOC }}/nodetool -u {{ user }} -pw {{ passwd }} {{ checkstatus }}'
+         register: output
+         ignore_errors: yes
+         when: checkstatus is defined
+
+       - name: output of nodetool command
+         debug:
+           msg: "{{ output.stdout_lines }}"
+         when: checkstatus is defined
+
+       - name: Set nodetool command
+         command: '{{ NODETOOL_LOC }}/nodetool -u {{ user }} -pw {{ passwd }} {{ setstatus }}'
+         when: setstatus is defined and checkstatus is defined
+
+       - name: Check nodetool command post change
+         command: '{{ NODETOOL_LOC }}/nodetool -u {{ user }} -pw {{ passwd }} {{ checkstatus }}'
+         register: output
+         ignore_errors: yes
+         when: setstatus is defined and checkstatus is defined
+
+       - name: output of nodetool command post change
+         debug:
+           msg: "{{ output.stdout_lines }}"
+         when: setstatus is defined and checkstatus is defined
+
