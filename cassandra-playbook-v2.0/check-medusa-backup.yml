@@ -1,0 +1,15 @@
+---
+- name: test
+  remote_user: dbops
+  hosts: all
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    - name: List backups
+      shell: medusa --prefix Test-cassandra_WEEK_`date +"%V_%Y"` list-backups
+        #register: backup
+
+        #- name: Print output
+        #debug:
+        #msg: "{{backup.stdout}}"

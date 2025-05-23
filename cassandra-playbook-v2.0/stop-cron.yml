@@ -1,0 +1,30 @@
+---
+- name: test
+  remote_user: dbops
+  hosts: all
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    # - name: Create cassandra_exporter directory
+    # shell: mkdir -p /opt/cassandra_exporter
+   
+   - name: Grep medusa process ID
+     shell: |
+      ps -ef | grep backup.sh | grep "/bin/bash" | grep -v "/bin/sh" | awk '{print $2}'
+     register: pid
+     any_errors_fatal: false  
+
+   - name: Kill the process
+     shell: kill -9 {{pid.stdout}}
+     any_errors_fatal: false
+
+   - name: Grep for other medusa process
+     shell: |
+       ps -ef | grep backup | grep "prefix" | awk '{print $2}'
+     register: pid2
+     any_errors_fatal: false
+
+   - name: Kill the process
+     shell: kill -9 {{ pid2.stdout }}    
+     any_errors_fatal: false

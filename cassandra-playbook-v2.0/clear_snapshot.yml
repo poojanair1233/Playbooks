@@ -1,0 +1,20 @@
+---
+- name: gather_facts
+  remote_user: dbops
+  hosts: test
+  become: true
+  gather_facts: false
+  serial: 1  
+    # vars:
+    #ansible_python_interpreter: /bin/python
+  tasks:
+   - name: Get Snapshot name
+     shell: | 
+       nodetool listsnapshots | grep medusa | awk '{print $1}' | uniq
+     register: snapshot
+   
+   - name: Clearsnapshost if any
+     shell: nodetool clearsnapshot -t {{ snapshot.stdout }}
+     when: snapshot.stdout  != ""    
+
+

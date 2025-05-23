@@ -1,0 +1,21 @@
+---
+- name: Medusa backup cron
+  remote_user: dbops
+  hosts: all
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks:
+   
+  - name: Setup cron
+    cron: 
+      name: Medusa restore
+        #month: 4
+        #day: 26
+      hour: 17
+      minute: 35
+      job: |
+       /bin/bash /root/restore_in-place.sh 
+      state: "present"
+
+         

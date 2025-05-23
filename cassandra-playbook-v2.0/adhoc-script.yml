@@ -1,0 +1,21 @@
+---
+- name: gather_facts
+  remote_user: dbops
+  hosts: test
+  become: true
+  gather_facts: false
+  serial: 1  
+    # vars:
+    #ansible_python_interpreter: /bin/python
+  tasks:
+   - name: Print IP address
+     shell: | 
+       echo `hostname`
+       cat /opt/apache-cassandra-4.0.11/logs/system.log | grep "2024-11-19 11:55*"
+     register: output
+
+   - name: Put all the content in file 
+     copy:
+       content: "{{output.stdoout}}"
+       dest: /home/dbops/dbeautomation/pooja.nair/myss1.txt 
+     delegate_to: 127.0.0.1    

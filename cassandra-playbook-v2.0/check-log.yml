@@ -1,0 +1,37 @@
+---
+- name: test
+  remote_user: dbops
+  hosts: all
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    # - name: Create cassandra_exporter directory
+    # shell: mkdir -p /opt/cassandra_exporter
+   
+   - name: Grep medusa process ID
+     shell: |
+       cat /root/medusa-log-14-04-2025 | tail -2 
+     register: log
+
+   - name: print the log 
+     debug:
+       msg: "{{log.stdout}}"    
+
+- name: 1st backup failed nodes
+  remote_user: dbops
+  hosts: backup_failed
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks: 
+   
+   - name: Grep medusa process ID
+     shell: |
+       cat /root/nohup.out | tail -2
+     register: nohup
+
+   - name: print the log
+     debug:
+       msg: "{{nohup.stdout}}"
+   

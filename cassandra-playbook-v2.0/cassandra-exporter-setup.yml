@@ -1,0 +1,37 @@
+---
+- name: test
+  remote_user: dbops
+  hosts: all
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    # - name: Create cassandra_exporter directory
+    # shell: mkdir -p /opt/cassandra_exporter
+   
+   - name: Copy the Cassandra exporter
+     copy:
+      src: /home/dbops/dbeautomation/pooja.nair/cassandra_exporter
+      dest: /opt/
+      directory_mode: yes  
+
+   - name: Create Cassandra-Exporter as a service
+     copy: 
+      src: /opt/cassandra_exporter/cassandra_exporter.service
+      dest: /etc/systemd/system/
+      remote_src: yes
+     tags: service-tag 
+
+   - name: Start the service 
+     shell: |
+       systemctl start cassandra_exporter
+       systemctl enable cassandra_exporter 
+   
+   - name: Gather service facts
+     service_facts:
+
+   - name: Check the status of the service
+     debug:
+       msg: "Cassandra exporter is {{ ansible_facts['services']['cassandra_exporter.service']['status'] }} and {{ ansible_facts['services']['cassandra_exporter.service']['state'] }}"
+         
+         
