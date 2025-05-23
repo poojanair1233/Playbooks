@@ -1,0 +1,49 @@
+---
+- name: Configure yaml file
+  tags: <CLUSTER_NAME-1>
+  block:
+  - name: Gather facts
+    setup:
+
+  - name: Configure YAML for <CLUSTER_NAME> cluster
+    template:
+      src: /<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-1>/cassandra.yaml.j2
+      dest: /opt/apache-cassandra-4.0.14/conf/cassandra.yaml
+         #  owner: cassandra
+         # group: cassandra
+
+  - name: Copy Rac-dc/env.sh/jvm8 for <CLUSTER_NAME-1> cluster
+    copy:
+     src: "{{item.source}}"
+     dest: "{{item.destination}}"
+    with_items:
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-1>/cassandra-rackdc.properties", destination: "/opt/apache-cassandra-4.0.14/conf/cassandra-rackdc.properties"}
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-1>/jvm8-server.options", destination: "/opt/apache-cassandra-4.0.14/conf/jvm8-server.options"}
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-1>/cassandra-env.sh", destination: "/opt/apache-cassandra-4.0.14/conf/cassandra-env.sh"}
+
+
+######### CLUSTER_NAME-2 ###########
+
+
+---
+- name: Configure yaml file
+  tags: <CLUSTER_NAME-2>
+  block:
+  - name: Gather facts
+    setup:
+
+  - name: Configure YAML for <CLUSTER_NAME-2> cluster
+    template:
+      src: /<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-2>/cassandra.yaml.j2
+      dest: /opt/apache-cassandra-4.0.14/conf/cassandra.yaml
+         #  owner: cassandra
+         # group: cassandra
+
+  - name: Copy Rac-dc/env.sh/jvm8 for <CLUSTER_NAME-1> cluster
+    copy:
+     src: "{{item.source}}"
+     dest: "{{item.destination}}"
+    with_items:
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-2>/cassandra-rackdc.properties", destination: "/opt/apache-cassandra-4.0.14/conf/cassandra-rackdc.properties"}
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-2>/jvm8-server.options", destination: "/opt/apache-cassandra-4.0.14/conf/jvm8-server.options"}
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-tar/files/<CLUSTER_NAME-2>/cassandra-env.sh", destination: "/opt/apache-cassandra-4.0.14/conf/cassandra-env.sh"}

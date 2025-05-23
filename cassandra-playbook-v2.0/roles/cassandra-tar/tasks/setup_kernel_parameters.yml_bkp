@@ -1,0 +1,93 @@
+---
+- sysctl:
+    name: vm.max_map_count
+    value: 1966080
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: vm.oom_kill_allocating_task
+    value: 0
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.ipv4.tcp_keepalive_time
+    value: 60
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.ipv4.tcp_keepalive_probes
+    value: 3
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.ipv4.tcp_keepalive_intvl
+    value: 10
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.core.rmem_max
+    value: 16777216
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.core.wmem_max
+    value: 16777216
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.core.rmem_default
+    value: 16777216
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.core.wmem_default
+    value: 16777216
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.core.optmem_max
+    value: 40960
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.ipv4.tcp_rmem
+    value: 4096 87380 16777216
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- sysctl:
+    name: net.ipv4.tcp_wmem
+    value: 4096 87380 16777216
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- template: 
+    src: /etc/ansible/roles/cassandra/files/limits.j2
+    dest: /etc/security/limits.conf
+    owner: root
+    group: root
+
+- name: Disable defragmentation 
+  shell: echo never | tee /sys/kernel/mm/transparent_hugepage/defrag      

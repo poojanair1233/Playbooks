@@ -1,0 +1,25 @@
+---
+- name: Copy Bash Profile and Init script
+  tags: always
+  block:
+   - name: Copy Bash profile
+     copy:
+      src: /<LOC>/pooja.nair/roles/cassandra-tar/files/bash_profile
+      dest: /root/.bash_profile
+      owner: root
+      group: root
+      mode: 0755
+
+   - name: Copy startup file
+     copy:
+      src: /<LOC>/pooja.nair/roles/cassandra-tar/files/startup_script
+      dest: /etc/init.d/cassandra
+      owner: root
+      group: root  
+      mode: 0755
+
+   - name: Create Cassandra PID directory
+     file:
+       path: /var/run/cassandra
+       state: directory
+       mode: 0755

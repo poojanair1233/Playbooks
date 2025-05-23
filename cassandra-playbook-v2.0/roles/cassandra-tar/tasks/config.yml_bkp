@@ -1,0 +1,10 @@
+---
+- name: Configure yaml file
+  tags: pps
+  block:
+  - name: Configure YAML, Rack-DC, env.sh, JVM8 options file
+    template:
+     src: "{{ item.sent_file}}"
+     dest: "{{ item.received_file }}"
+    with_items:
+        - {sent_file: "home/dbops/dbeautomation/pooja.nair/roles/cassandra-tar/files/pps/cassandra.yaml.j2", received_file: "/opt/apache-cassandra-4.0.14/conf/cassandra.yaml"}

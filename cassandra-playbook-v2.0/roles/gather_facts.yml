@@ -1,0 +1,13 @@
+---
+- name: Gather facts
+  hosts: all
+  gather_facts: yes
+  become: true
+  remote_user: dbops  
+
+  tasks:
+   - name: Print facts 
+     debug:
+       # msg: "{{ ansible_facts.all_ipv4_addresses }} "
+       msg: "{{ ansible_facts.hostname}} "
+    

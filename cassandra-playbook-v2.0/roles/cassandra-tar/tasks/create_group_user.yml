@@ -1,0 +1,16 @@
+---
+
+- name: Create group
+  group:
+    name: cassandra
+    state: present
+    gid: 9081
+
+- name: Create Cassandra User
+  user:
+   name: cassandra
+   create_home: yes
+   state: present
+   uid: 9082
+   group: 9081
+   password:

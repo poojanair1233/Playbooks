@@ -1,0 +1,3 @@
+---
+# vars file for cassandra
+host_ip: '{{ ansible_facts.all_ipv4_addresses[0] }}' 

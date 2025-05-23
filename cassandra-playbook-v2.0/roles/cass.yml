@@ -1,0 +1,9 @@
+---
+- hosts: all
+  serial: 1
+  remote_user: dbops
+  become: true  
+  roles:
+    #  - cassandra-tar
+    # - cassandra-package
+      - cassandra-medusa

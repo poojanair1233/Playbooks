@@ -1,0 +1,33 @@
+---
+- name: Setup Kernel Parameters, Copy Template, and Disable Defragmentation
+  tags: always
+  block:
+   - name: Set sysctl parameters
+     sysctl:
+       name: "{{ item.name }}"
+       value: "{{ item.value }}"
+       state: present
+       reload: yes
+     loop:
+      - { name: 'vm.max_map_count', value: '1966080' }
+      - { name: 'vm.oom_kill_allocating_task', value: '0' }
+      - { name: 'net.ipv4.tcp_keepalive_time', value: '60' }
+      - { name: 'net.ipv4.tcp_keepalive_probes', value: '3' }
+      - { name: 'net.ipv4.tcp_keepalive_intvl', value: '10' }
+      - { name: 'net.core.rmem_max', value: '16777216' }
+      - { name: 'net.core.wmem_max', value: '16777216' }
+      - { name: 'net.core.rmem_default', value: '16777216' }
+      - { name: 'net.core.wmem_default', value: '16777216' }
+      - { name: 'net.core.optmem_max', value: '40960' }
+      - { name: 'net.ipv4.tcp_rmem', value: '4096 87380 16777216' }
+      - { name: 'net.ipv4.tcp_wmem', value: '4096 87380 16777216' }
+
+   - name: Copy limits template to /etc/security/limits.conf
+     template:
+        src: /<LOC>/pooja.nair/roles/cassandra-tar/files/limits.j2
+        dest: /etc/security/limits.conf
+        owner: root
+        group: root
+
+   - name: Disable transparent hugepage defragmentation
+     shell: echo never | tee /sys/kernel/mm/transparent_hugepage/defrag

@@ -1,0 +1,23 @@
+---
+- name: Copy files from remote to Ansible node
+  #  # You can also define this in your inventory file
+  #gather_facts: no  # Optional, set to "yes" if you need facts
+  hosts: all
+  serial: yes
+
+  tasks:
+    - name: Copy yaml to Ansible server
+      #become: yes
+      remote_user: dbops
+        #   hosts: 10.12.75.88  
+      ansible.builtin.fetch:
+        src: "{{ item }}"  # Path on the remote server
+        dest: /home/dbops/dbeautomation/pooja.nair/roles/cassandra-tar/files/labs/  # Path on the Ansible node
+        flat: yes  # This ensures the file is copied directly without creating its directory structure
+      with_items:
+        - /opt/apache-cassandra-4.0.8/conf/cassandra.yaml
+        - /opt/apache-cassandra-4.0.8/conf/cassandra-env.sh
+        - /opt/apache-cassandra-4.0.8/conf/cassandra-rackdc.properties
+        - /opt/apache-cassandra-4.0.8/conf/jvm8-server.options  
+
+

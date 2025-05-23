@@ -1,0 +1,14 @@
+---
+#- include_tasks: bash_profile.yml
+#  tags: always
+#- include_tasks: install_java.yml
+#  tags: always
+#- include_tasks: create_group_user.yml
+#- include_tasks: setup_directories.yml
+#  tags: always
+#- include_tasks: install-cassandra.yml
+#  tags: always
+- include_tasks: config-test.yml
+  tags:
+    - CLUSTER_NAME-1
+    - CLUSTER_NAME-2

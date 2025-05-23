@@ -1,0 +1,12 @@
+---
+- name: Install/copy C*
+  become: yes
+  become_user: root
+  synchronize: src=/<LOC>/pooja.nair/roles/cassandra-tar/files/apache-cassandra-4.0.14 dest=/opt/
+  tags: always
+    #- name: create sym link and sort out the permissions
+    #shell: |
+    #cd /opt
+    #sudo ln -s /opt/cass/apache-cassandra-4.0.11 cassandra
+    #chown -R cassandra:cassandra /opt/cass
+    #chmod 755 /opt/cass
