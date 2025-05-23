@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+if [ -f /root/.bash_profile ]; then
+       source /root/.bash_profile
+fi       
+
+LOGFILE="/var/log/medusa/backup.log-$(date +'%d-%m-%Y')"
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+EMAIL="pooja.n2@myntra.com"  # Replace with your actual email address
+
+{
+    echo "$(date "+%Y-%m-%d %H:%M:%S") Starting backup..."
+
+    # Example backup command – replace with your actual command
+    medusa --prefix "{{cluster_name}}_WEEK_$(date +"%V_%Y")" backup --backup-name="backup-$(date +%d-%b-%Y-%H-%M)" || {
+        echo "$(date "+%Y-%m-%d %H:%M:%S") ERROR: Backup failed" >> "$LOGFILE"
+
+        # Send email notification on failure
+        echo -e "Subject: Backup Failed\n\nThe Medusa backup failed on $(hostname) at $(date "+%Y-%m-%d %H:%M:%S").\nCheck the backup logs for more details." | mail -s "Backup Failure Notification" "$EMAIL"
+
+        exit 1
+    }
+
+    echo "$(date "+%Y-%m-%d %H:%M:%S") Backup completed successfully"
+} >> "$LOGFILE" 2>&1
+

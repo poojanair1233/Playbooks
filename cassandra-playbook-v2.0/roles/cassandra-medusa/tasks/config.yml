@@ -1,0 +1,22 @@
+---
+- name: Configure yaml file
+  block:
+  - name: Gather facts
+    setup:
+   
+  - name: Create medusa log directory
+    file:
+      path: /var/log/medusa 
+      state: directory
+      mode: '0755'  
+      
+  - name: Setup the Medusa Config file
+    template:
+      src: /home/dbops/dbeautomation/pooja.nair/roles/cassandra-medusa/files/medusa.ini.j2
+      dest: /etc/medusa/medusa.ini
+  
+  - name: Copy Azure credential file
+    copy:
+     src: "/home/dbops/dbeautomation/pooja.nair/roles/cassandra-medusa/files/medusa-azure-credentials"
+     dest: "/etc/medusa/medusa-azure-credentials"  
+

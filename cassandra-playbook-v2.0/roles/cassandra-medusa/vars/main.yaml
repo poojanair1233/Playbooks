@@ -1,0 +1,18 @@
+---
+# vars file for medusa
+# NOTE for TAR Installation#####
+# start and stop command - "/etc/init.d/cassandra start" and "/etc/init.d/cassandra stop"
+# Cassandra Yaml location - "/opt/apache-cassandra-4.0.14/conf/cassandra.yaml"
+#
+# NOTE for PACKAGE Installation
+# start and stop command - "service cassandra start" and "service cassandra stop"
+# Cassandra Yaml Location - "/etc/cassandra/cassandra.yaml"
+#
+hostname: '{{ ansible_facts.hostname }}'
+password: 'cassandra'
+cluster_name: 'pps-cassandra'
+start_command: '/etc/init.d/cassandra start'
+stop_command: '/etc/init.d/cassandra stop'
+cassandra_yaml_location: '/opt/apache-cassandra-4.0.14/conf/cassandra.yaml'  
+cron_hour: 6 
+cron_minute: 0 

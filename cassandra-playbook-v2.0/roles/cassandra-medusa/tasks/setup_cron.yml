@@ -1,0 +1,25 @@
+---
+- name: Copy backup script and set cron
+  block:
+  - name: Setup the Backup-script
+    template:
+      src: /home/dbops/dbeautomation/pooja.nair/roles/cassandra-medusa/files/backup.sh_tar.j2
+      dest: /root/backup.sh
+      mode: '0755'
+   
+  - name: Setup cron
+    cron:
+     name: Medusa backup
+        #month: 4
+        #day: 26
+     hour: "{{ cron_hour }}"
+     minute: "{{ cron_minute }}"
+     job: |
+        /bin/bash /root/backup.sh
+     state: "present"
+      
+        #- name: Copy backup script to the nodes
+        #copy:
+        #src: "/home/dbops/dbeautomation/pooja.nair/roles/cassandra-medusa/files/backup.sh"
+        #dest: "/root/backup.sh"  
+        #mode: '0755'

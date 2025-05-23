@@ -1,0 +1,28 @@
+---
+################## TEST CLUSTER ##########################
+- name: Configure yaml file
+  tags: test-cluster
+  block:
+  - name: Gather Facts
+    setup:
+
+  - name: Delete older directories and set proper permissions
+    shell: |
+     rm -rf /var/lib/cassandra
+     chown -R cassandra:cassandra /myntra
+
+  - name: Configure YAML for TEST-CLUSTER cluster
+    template:
+      src: /<LOC>/pooja.nair/roles/cassandra-package/files/test-cluster/cassandra.yaml.j2
+      dest: /etc/cassandra/cassandra.yaml
+         #  owner: cassandra
+         # group: cassandra
+
+  - name: Copy Rac-dc/env.sh/jvm8 for TEST-CLUSTER cluster
+    copy:
+     src: "{{item.source}}"
+     dest: "{{item.destination}}"
+    with_items:
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-package/files/test-cluster/cassandra-rackdc.properties", destination: "/etc/cassandra/cassandra-rackdc.properties"}
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-package/files/test-cluster/jvm8-server.options", destination: "/etc/cassandra/jvm8-server.options"}
+       - {source: "/<LOC>/pooja.nair/roles/cassandra-package/files/test-cluster/cassandra-env.sh", destination: "/etc/cassandra/cassandra-env.sh"}

@@ -1,0 +1,4 @@
+---
+- name: Print host IP
+  debug:
+    msg: "IP is {{host_ip}}"

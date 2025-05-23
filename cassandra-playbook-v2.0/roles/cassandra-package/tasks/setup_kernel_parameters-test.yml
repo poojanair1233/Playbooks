@@ -1,0 +1,30 @@
+---
+- name: Setup Kernel Parameters, Copy Template, and Disable Defragmentation
+  #become: true
+  #become_user: root  
+  tags: always
+  block:
+   - name: Set sysctl parameters
+     sysctl:
+       name: "{{ item.name }}"
+       value: "{{ item.value }}"
+       state: present
+       reload: yes
+     loop:
+      - { name: 'vm.max_map_count', value: '1048575' }
+      - { name: 'net.ipv4.tcp_keepalive_time', value: '60' }
+      - { name: 'net.ipv4.tcp_keepalive_probes', value: '3' }
+      - { name: 'net.ipv4.tcp_keepalive_intvl', value: '10' }
+
+   - name: Copy limits template to /etc/security/limits.d/cassandra.conf
+     template:
+        src: /home/dbops/dbeautomation/pooja.nair/roles/cassandra-package/files/cassandra.j2
+        dest: /etc/security/limits.d/cassandra.conf
+        owner: root
+        group: root
+
+          # - name: Disable transparent hugepage defragmentation
+          #shell: echo never | tee /sys/kernel/mm/transparent_hugepage/defrag
+       # args:
+       #creates: /sys/kernel/mm/transparent_hugepage/defrag  # Ensures the command only runs if the file exists
+

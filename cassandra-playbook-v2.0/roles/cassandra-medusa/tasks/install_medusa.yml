@@ -1,0 +1,22 @@
+---
+- name: Install Medusa Package
+  become: yes
+  become_user: root  
+  block:
+   - name: Download medusa repository
+     shell: |
+      curl -1sLf   'https://dl.cloudsmith.io/public/thelastpickle/medusa/setup.deb.sh'   | sudo -E bash
+
+   - name: Update Cache
+     apt:
+      update_cache: yes
+  
+   - name: Install azure-cli if not already present
+     apt:
+      name: azure-cli
+      state: present     
+   
+   - name: Install Medusa
+     apt:
+       name: cassandra-medusa 
+       state: present

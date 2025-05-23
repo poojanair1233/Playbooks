@@ -1,0 +1,7 @@
+---
+# Tasks to run always irrespective of the cluster are as below together
+- block:
+   - include_tasks: install_medusa.yml
+   - include_tasks: config.yml
+     #  - include_tasks: setup_cron.yml
+     #- include_tasks: install_mailUtil.yml

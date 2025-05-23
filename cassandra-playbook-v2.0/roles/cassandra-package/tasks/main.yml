@@ -1,0 +1,13 @@
+---
+# Tasks to run always irrespective of the cluster are as below together
+- block:
+   - include_tasks: install_java.yml
+   - include_tasks: setup_kernel_parameters-test.yml
+   - include_tasks: install_cassandra.yml
+  tags:
+   - always
+
+# Tasks to setup cassandra for respective cluster
+- include_tasks: config.yml
+  tags:
+    - test-cluster

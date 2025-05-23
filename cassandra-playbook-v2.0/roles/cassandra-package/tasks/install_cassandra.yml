@@ -1,0 +1,40 @@
+---
+- name: Install Cassndra Package
+  become: yes
+  become_user: root  
+  tags: always
+  block:
+   - name: Add Apache Cassandra Repository and Key
+     shell: | 
+      echo "deb [signed-by=/etc/apt/keyrings/apache-cassandra.asc] https://debian.cassandra.apache.org 40x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
+      curl -o /etc/apt/keyrings/apache-cassandra.asc https://downloads.apache.org/cassandra/KEYS
+
+   - name: Update Cache
+     apt:
+      update_cache: yes
+
+   - name: Install Cassandra
+     apt:
+       name: cassandra 
+       state: present
+
+         # - name: Wait for Cassandra service to become active
+         #wait_for:
+         #port: 9042  
+         #state: started
+         #delay: 10   
+         #timeout: 60    
+
+         #- name: Stop the autostarted Cassandra service
+         #service: 
+         #name: cassandra
+         #state: stopped
+  
+
+         #- name: Remove the default created directories and clear the log files
+         #shell: |
+         #rm -rf /var/log/cassandra/*
+         #rm -rf /var/lib/cassandra/*
+         #cd 
+         #rm -rf ./cassandra
+         #chown -R cassandra:cassandra /myntra/

@@ -1,0 +1,14 @@
+---
+- name: Install Mail Package
+  become: yes
+  become_user: root
+  block:
+   - name: Update Cache
+     apt:
+      update_cache: yes
+
+   - name: Install MailUtil if not already present
+     apt:
+      name: mailutils
+      state: present
+
